@@ -1,4 +1,4 @@
-namespace Rhexia.v2.Ast.Expression;
+namespace Rhexia.v2.Ast.Expressions;
 
 public record InfixExpr(Expr Left, Op Op, Expr Right) : Expr
 {

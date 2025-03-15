@@ -1,6 +1,6 @@
-using Rhexia.v2.Ast.Expression;
+using Rhexia.v2.Ast.Expressions;
 
-namespace Rhexia.v2.Ast;
+namespace Rhexia.v2.Ast.Statements;
 
 public abstract record Statement(StatementKind Kind);
 

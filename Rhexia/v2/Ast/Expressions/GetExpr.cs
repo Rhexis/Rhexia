@@ -1,4 +1,4 @@
-namespace Rhexia.v2.Ast.Expression;
+namespace Rhexia.v2.Ast.Expressions;
 
 public record GetExpr(Expr Expr, string Field) : Expr
 {
