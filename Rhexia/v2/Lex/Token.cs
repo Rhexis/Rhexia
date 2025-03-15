@@ -11,8 +11,6 @@ public record Token(TokenKind Kind, object Literal)
 public enum TokenKind
 {
     Identifier,
-    Reserved,
-    Number,
     Var,
     Assign,
     
@@ -25,10 +23,10 @@ public enum TokenKind
     
     LessThan,
     GreaterThan,
-    LessThanOrEqual,
-    GreaterThanOrEqual,
-    Equal,
-    NotEqual,
+    LessThanOrEqualTo,
+    GreaterThanOrEqualTo,
+    EqualTo,
+    NotEqualTo,
     
     Not,
     And,
@@ -41,12 +39,8 @@ public enum TokenKind
     Colon,
     Semicolon,
     
-    SingleQuote,
-    DoubleQuote,
-    
     StringLiteral,
     NumberLiteral,
-    BooleanLiteral,
     
     While,
     For,
@@ -63,6 +57,7 @@ public enum TokenKind
     Dot,
     Ampersand,
     Pipe,
+    Return,
     
     EndOfFile,
 }

@@ -1,12 +1,41 @@
-﻿namespace Rhexia;
+﻿using Rhexia.v2.Lex;
+
+namespace Rhexia;
 
 internal static class Program
 {
     private static void Main(string[] args)
     {
         Console.WriteLine("Hello, World!");
-
         
+        var code = 
+                "var foo = 50 / 2;" +
+                "" +
+                "var obj = {" +
+                "    x: 100," +
+                "    y: 200," +
+                "    z: 300," +
+                "    foo," +
+                "    complex: {bar: true}," +
+                "};" +
+                "" +
+                "var f = obj.complex.bar;" +
+                "foo = obj.foo + 5;" +
+                ""
+            ;
+
+        var lex = new Lexer(code);
+        var tokens = new List<Token>();
+        
+        var token = lex.Analyse();
+        do
+        {
+            tokens.Add(token);
+            token = lex.Analyse();
+        }
+        while (token.Kind != TokenKind.EndOfFile);
+
+        tokens.ForEach(Console.WriteLine);
     }
 
     private static void ScriptV1()
