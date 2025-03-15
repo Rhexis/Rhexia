@@ -4,10 +4,10 @@ namespace Rhexia.v2.Ast;
 
 public class AbstractSyntaxTree
 {
-    public List<Statement> Statements { get; set; } = [];
+    public List<Statement> Statements { get; } = [];
     
     public override string ToString()
     {
-        return $"[ {string.Join(", ", Statements)} ]";
+        return $"AST: [ {string.Join(", ", Statements)} ]";
     }
 }
