@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Rhexia.Core;
+namespace Rhexia.v1;
 
 public static class Lexer
 {

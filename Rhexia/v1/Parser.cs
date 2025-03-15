@@ -1,4 +1,4 @@
-﻿namespace Rhexia.Core;
+﻿namespace Rhexia.v1;
 
 public class Parser
 {
