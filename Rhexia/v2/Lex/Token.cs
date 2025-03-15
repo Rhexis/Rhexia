@@ -54,6 +54,7 @@ public enum TokenKind
     Modulus,
     
     Function,
+    In,
     Dot,
     Ampersand,
     Pipe,

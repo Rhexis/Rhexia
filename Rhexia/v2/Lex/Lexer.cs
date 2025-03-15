@@ -277,6 +277,7 @@ public class Lexer
             "null" => TokenKind.Null,
             
             "function" => TokenKind.Function,
+            "in" => TokenKind.In,
             "if" => TokenKind.If,
             "else" => TokenKind.Else,
             
