@@ -5,13 +5,13 @@ namespace Rhexia.v2.Lex;
 public class Lexer
 {
     // ReSharper disable once InconsistentNaming
-    public const char NullOrEOF = '\0';
+    public const char EOF = '\0';
     public string Source { get; }
 
     private const int Offset = -2;
     private int _index = Offset;
-    private char _current = NullOrEOF;
-    private char _next = NullOrEOF;
+    private char _current = EOF;
+    private char _next = EOF;
     
     public Lexer(string? source)
     {
@@ -21,7 +21,7 @@ public class Lexer
 
     private void EatWhitespace()
     {
-        while (_current != NullOrEOF && char.IsWhiteSpace(_current))
+        while (_current != EOF && char.IsWhiteSpace(_current))
         {
             Next();
         }
@@ -38,7 +38,7 @@ public class Lexer
         }
         else
         {
-            _next = NullOrEOF;
+            _next = EOF;
         }
     }
 
@@ -62,7 +62,7 @@ public class Lexer
             return literal;
         }
         
-        return new Token(TokenKind.EndOfFile, NullOrEOF);
+        return new Token(TokenKind.EndOfFile, EOF);
     }
 
     private bool IsSimpleToken([NotNullWhen(true)] out TokenKind? kind)
@@ -84,7 +84,7 @@ public class Lexer
             '}' => TokenKind.RightCurlyBracket,
             '[' => TokenKind.LeftSquareBracket,
             ']' => TokenKind.RightSquareBracket,
-            NullOrEOF => TokenKind.EndOfFile,
+            EOF => TokenKind.EndOfFile,
             _ => null
         };
         return kind != null;
@@ -202,7 +202,7 @@ public class Lexer
         var currentIndex = _index;
         var dots = 0;
 
-        while (_current != NullOrEOF && "0123456789._".Contains(_next))
+        while (_current != EOF && "0123456789._".Contains(_next))
         {
             if (_current == '.')
             {
@@ -227,7 +227,7 @@ public class Lexer
         var currentIndex = _index;
 
         // While still fetching chars within double quotes
-        while (_current != NullOrEOF && _current != '\"')
+        while (_current != EOF && _current != '\"')
         {
             Next();
         }
@@ -248,7 +248,7 @@ public class Lexer
         //  and not end of line 
         //  and still processing letters
         // Keep counting to get length of literal.
-        while (_current != NullOrEOF 
+        while (_current != EOF 
                && _current != ';'
                && (
                    char.IsLetter(_next)
