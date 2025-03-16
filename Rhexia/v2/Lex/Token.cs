@@ -40,7 +40,7 @@ public enum TokenKind
     Semicolon,
     
     StringLiteral,
-    NumberLiteral,
+    NumericLiteral,
     
     While,
     For,

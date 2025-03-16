@@ -1,66 +1,34 @@
 # Rhexia (Rhex-I-A)
 
-Rhexia or Rhex Intelligence Artificielle, is a languange written by Rhexis.
+Rhexia or Rhex Intelligence Artificielle, is a interpreted language written in C#.
 
-Raw Code: `45 - 5 * (46 / (foo * bar) * (x + y))`
-
-Parsed Code:
+Code Sample:
 ```
-Program { 
-    Kind = Program,
-    Body = [
-        BinaryExpression {
-            Kind = BinaryExpression,
-            Left = NumericLiteral { 
-                Kind = NumericLiteral,
-                Value = 45
-            },
-            Right = BinaryExpression {
-                Kind = BinaryExpression,
-                Left = NumericLiteral {
-                    Kind = NumericLiteral,
-                    Value = 5
-                },
-                Right = BinaryExpression {
-                    Kind = BinaryExpression,
-                    Left = BinaryExpression {
-                        Kind = BinaryExpression,
-                        Left = NumericLiteral {
-                            Kind = NumericLiteral,
-                            Value = 46
-                        },
-                        Right = BinaryExpression {
-                            Kind = BinaryExpression,
-                            Left = Identifier {
-                                Kind = Identifier,
-                                Symbol = foo
-                            },
-                            Right = Identifier {
-                                Kind = Identifier,
-                                Symbol = bar
-                            },
-                            Operator = *
-                        },
-                        Operator = /
-                    },
-                    Right = BinaryExpression {
-                        Kind = BinaryExpression,
-                        Left = Identifier {
-                            Kind = Identifier,
-                            Symbol = x
-                        },
-                        Right = Identifier {
-                            Kind = Identifier,
-                            Symbol = y
-                        },
-                        Operator = +
-                    },
-                    Operator = *
-                },
-                Operator = *
-            },
-            Operator = -
-        }
-    ]
+var name = "Rhexis";
+var age = 30;
+var daysOld = 10_950;
+
+function greet(name)
+{
+    print("Hello, " + name);
+}
+
+greet(name);
+
+print("Age is: " + age);
+print("Name is: " + name);
+
+if (age == 30)
+{
+    print("You are 30 years old!");
+}
+else
+{
+    print(age + " is " + age * 365 + " days old");
+}
+
+for(i in range(age))
+{
+    print(i);
 }
 ```

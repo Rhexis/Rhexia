@@ -98,6 +98,8 @@ public class Lexer
         {
             if (_next == '=')
             {
+                // Eat the first '='
+                Next();
                 token = new Token(TokenKind.EqualTo, $"{_current}{_next}");
             }
             else
@@ -109,6 +111,8 @@ public class Lexer
         {
             if (_next == '=')
             {
+                // Eat the '>'
+                Next();
                 token = new Token(TokenKind.GreaterThanOrEqualTo, $"{_current}{_next}");
             }
             else
@@ -120,6 +124,8 @@ public class Lexer
         {
             if (_next == '=')
             {
+                // Eat the '<'
+                Next();
                 token = new Token(TokenKind.LessThanOrEqualTo, $"{_current}{_next}");
             }
             else
@@ -131,6 +137,8 @@ public class Lexer
         {
             if (_next == '=')
             {
+                // Eat the '!'
+                Next();
                 token = new Token(TokenKind.NotEqualTo, $"{_current}{_next}");
             }
             else
@@ -142,6 +150,8 @@ public class Lexer
         {
             if (_next == '&')
             {
+                // Eat the first '&'
+                Next();
                 token = new Token(TokenKind.And, $"{_current}{_next}");
             }
             else
@@ -153,6 +163,8 @@ public class Lexer
         {
             if (_next == '|')
             {
+                // Eat the first '|'
+                Next();
                 token = new Token(TokenKind.Or, $"{_current}{_next}");
             }
             else
@@ -176,7 +188,7 @@ public class Lexer
             if (IsReserved(lastToken.Literal.ToString() ?? string.Empty, out var kind))
             {
                 // Must be a reserved token
-                token = new Token(kind.Value, lastToken.Literal.ToString() ?? string.Empty);
+                token = new Token(kind.Value, lastToken.Literal.ToString()!);
             }
             else
             {
@@ -216,7 +228,7 @@ public class Lexer
         // Get chars containing literal
         var literal = Source.Substring(currentIndex, _index - currentIndex + 1);
         // Allow '_' for number formatting but strip them out when internally.
-        return new Token(TokenKind.NumberLiteral, literal.Replace("_", ""));
+        return new Token(TokenKind.NumericLiteral, literal.Replace("_", ""));
     }
 
     private Token MakeStringLiteral()

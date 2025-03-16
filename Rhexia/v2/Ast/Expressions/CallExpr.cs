@@ -4,6 +4,6 @@ public record CallExpr(Expr Expr, List<Expr> Args) : Expr
 {
     public override string ToString()
     {
-        return $"{{ Expr: {Expr}, Args: [{string.Join(", ", Args)}] }}";
+        return $"Call: {{ Expr: {Expr}, Args: [{string.Join(", ", Args)}] }}";
     }
 }

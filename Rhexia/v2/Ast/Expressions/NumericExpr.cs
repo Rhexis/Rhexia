@@ -4,6 +4,6 @@ public record NumericExpr(double Literal) : Expr
 {
     public override string ToString()
     {
-        return $"Number({Literal})";
+        return $"Numeric({Literal})";
     }
 }
