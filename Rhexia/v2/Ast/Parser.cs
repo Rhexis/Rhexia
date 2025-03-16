@@ -224,8 +224,8 @@ public class Parser
             TokenKind.StringLiteral => new StringExpr(Eat(TokenKind.StringLiteral).Literal.ToString()!),
             TokenKind.Null => new NullExpr(Eat(TokenKind.Null).Literal.ToString()!),
             TokenKind.NumericLiteral => new NumericExpr(double.Parse(Eat(TokenKind.NumericLiteral).Literal.ToString()!)),
-            TokenKind.True => new BoolExpr((bool)Eat(TokenKind.True).Literal),
-            TokenKind.False => new BoolExpr((bool)Eat(TokenKind.False).Literal),
+            TokenKind.True => new BoolExpr(bool.Parse(Eat(TokenKind.True).Literal.ToString()!)),
+            TokenKind.False => new BoolExpr(bool.Parse(Eat(TokenKind.False).Literal.ToString()!)),
             TokenKind.Identifier => new IdentifierExpr(Eat(TokenKind.Identifier).Literal.ToString()!),
             _ => null
         };
@@ -244,7 +244,7 @@ public class Parser
         return _current.Kind switch
         {
             TokenKind.Minus => new PrefixExpr(Op.Minus, ParseExpr(Eat(TokenKind.Minus))),
-            TokenKind.Not => new PrefixExpr(Op.NotEqualTo, ParseExpr(Eat(TokenKind.Not))),
+            TokenKind.Not => new PrefixExpr(Op.Not, ParseExpr(Eat(TokenKind.Not))),
             _ => null
         };
     }

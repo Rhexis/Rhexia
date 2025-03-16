@@ -16,6 +16,7 @@ function greet(name)
 greet(name);
 
 print("Age is: " + age);
+print("Last year your age was: " + age - daysOld);
 print("Name is: " + name);
 
 if (age == 30)
@@ -27,6 +28,8 @@ else
     print(age + " is " + age * 365 + " days old");
 }
 
+var arr = [1, 2, 3];
+            
 for(i in range(age))
 {
     print(i);

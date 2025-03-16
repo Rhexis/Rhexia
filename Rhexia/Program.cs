@@ -21,6 +21,7 @@ internal static class Program
         //     greet(name);
         //     
         //     print("Age is: " + age);
+        //     print("Last year your age was: " + age - daysOld);
         //     print("Name is: " + name);
         //     
         //     if (age == 30)
@@ -31,6 +32,8 @@ internal static class Program
         //     {
         //         print(age + " is " + age * 365 + " days old");
         //     }
+        //         
+        //     var arr = [1, 2, 3];
         //
         //     for(i in range(age))
         //     {
@@ -50,6 +53,7 @@ internal static class Program
             greet(name);
             
             print("Age is: " + age);
+            print("Last year your age was: " + age - daysOld);
             print("Name is: " + name);
             
             if (age == 30)
@@ -60,6 +64,10 @@ internal static class Program
             {
                 print(age + " is " + age * 365 + " days old");
             }
+            
+            var arr = [1, 2, 3];
+            
+            if (!false) { print("true"); }
         """;
 
         var lex = new Lexer(code);
