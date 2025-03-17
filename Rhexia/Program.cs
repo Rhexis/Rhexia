@@ -58,6 +58,13 @@ internal static class Program
                 return num + 1;
             }
             
+            var func = function()
+            {
+                print("I am a closure");
+            }
+            
+            func();
+            
             print(addOne(5));
         """;
 
