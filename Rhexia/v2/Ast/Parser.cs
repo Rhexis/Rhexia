@@ -112,16 +112,12 @@ public class Parser
         var increment = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
         
-        var block = ParseBlock();
-        Expect(TokenKind.RightCurlyBracket);
-        
-        return new ForStatement(init, condition, increment, block);
+        return new ForStatement(init, condition, increment, ParseBlock());
     }
 
     private IfElseStatement ParseIfElse()
     {
         Eat(TokenKind.If);
-        
         Eat(TokenKind.LeftRoundBracket);
         var condition = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
@@ -130,16 +126,13 @@ public class Parser
         
         if (_next.Kind != TokenKind.Else)
         {
-            Expect(TokenKind.RightCurlyBracket);
             return new IfElseStatement(condition, then);
         }
 
         Eat(TokenKind.RightCurlyBracket);
         Eat(TokenKind.Else);
-        var block = ParseBlock();
-        Expect(TokenKind.RightCurlyBracket);
         
-        return new IfElseStatement(condition, then, block);
+        return new IfElseStatement(condition, then, ParseBlock());
     }
 
     private ReturnStatement ParseReturn()
@@ -153,9 +146,9 @@ public class Parser
     {
         Eat(TokenKind.Function);
         var name = hasIdentifier ? Eat(TokenKind.Identifier).Literal.ToString()! : "<Closure>";
+        
         Eat(TokenKind.LeftRoundBracket);
         var parameters = new List<Parameter>();
-        
         while (_current.Kind is not TokenKind.EndOfFile and not TokenKind.RightRoundBracket)
         {
             // Shouldn't enter here for functions with no parameters
@@ -167,23 +160,26 @@ public class Parser
                 Eat(TokenKind.Comma);
             }
         }
-        
         Eat(TokenKind.RightRoundBracket);
+        
         return new FunctionStatement(name, parameters, ParseBlock());
     }
 
     private WhileStatement ParseWhile()
     {
         Eat(TokenKind.While);
-        // TODO :: Implement
-        return null;
+        
+        Eat(TokenKind.LeftRoundBracket);
+        var condition = ParseExpr();
+        Eat(TokenKind.RightRoundBracket);
+        
+        return new WhileStatement(condition, ParseBlock());
     }
 
     private List<Statement> ParseBlock()
     {
         Eat(TokenKind.LeftCurlyBracket);
         var block = new List<Statement>();
-
         while (_current.Kind != TokenKind.RightCurlyBracket)
         {
             var statement = ParseStatement();
@@ -197,7 +193,8 @@ public class Parser
                 Eat(TokenKind.Semicolon);
             }
         }
-        
+        // Only expect the closing '}', don't eat it.
+        // Leave eating up to the discretion of the caller
         Expect(TokenKind.RightCurlyBracket);
         return block;
     }

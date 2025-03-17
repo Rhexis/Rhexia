@@ -66,6 +66,12 @@ internal static class Program
             }
             
             var arr = [1, 2, 3];
+            var idx = 0;
+            while (idx < arr.Length)
+            {
+                print(arr[idx]);
+                idx++;
+            }
             
             if (!false) { print("true"); }
             
