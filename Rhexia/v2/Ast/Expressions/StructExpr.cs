@@ -1,9 +1,9 @@
 namespace Rhexia.v2.Ast.Expressions;
 
-public record StructExpr(Expr Expr, Dictionary<string, Expr> Fields) : Expr
+public record StructExpr(IdentifierExpr Identifier, Dictionary<string, Expr> Fields) : Expr
 {
     public override string ToString()
     {
-        return $"{{ Expr: {Expr}, Fields: {Fields} }}";
+        return $"Struct: {{ Identifier: {Identifier}, Fields: {Fields} }}";
     }
 }

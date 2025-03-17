@@ -201,7 +201,8 @@ public class Parser
     private Expr ParseExpr(Token? eaten = null)
     {
         Expr left = ParseSimpleExpr()
-            ?? ParseClosure()
+            ?? ParseClosureExpr()
+            ?? ParseStructExpr()
             ?? ParsePrefixExpr()
             ?? ParseListExpr()
             ?? throw new Exception($"Unknown token: {_current}");
@@ -242,12 +243,44 @@ public class Parser
         };
     }
 
-    private ClosureExpr? ParseClosure()
+    private ClosureExpr? ParseClosureExpr()
     {
         if (_current.Kind != TokenKind.Function) return null;
         
         var function = ParseFunction(false);
         return new ClosureExpr(function.Parameters, function.Body);
+    }
+
+    private StructExpr? ParseStructExpr()
+    {
+        if (_current.Kind != TokenKind.Struct) return null;
+        
+        Eat(TokenKind.Struct);
+        var name = new IdentifierExpr(Eat(TokenKind.Identifier).Literal.ToString()!);
+        
+        Eat(TokenKind.LeftCurlyBracket);
+        var fields = new Dictionary<string, Expr>();
+        while (_current.Kind != TokenKind.RightCurlyBracket)
+        {
+            var key = Eat().ToString();
+            Expr value;
+            if (_current.Kind == TokenKind.Colon)
+            {
+                Eat(TokenKind.Colon);
+                value = ParseExpr();
+            }
+            else
+            {
+                value = new IdentifierExpr(key);
+            }
+            fields.Add(key, value);
+            if (_current.Kind == TokenKind.Comma)
+            {
+                Eat(TokenKind.Comma);
+            }
+        }
+        Expect(TokenKind.RightCurlyBracket);
+        return new StructExpr(name, fields);
     }
 
     private Expr? ParsePrefixExpr()
@@ -303,31 +336,6 @@ public class Parser
                     : ParseExpr();
                 Eat(TokenKind.RightSquareBracket);
                 return new ListIndexExpr(left, index);
-            
-            case TokenKind.LeftCurlyBracket:
-                Eat(TokenKind.LeftCurlyBracket);
-                var fields = new Dictionary<string, Expr>();
-                while (_current.Kind != TokenKind.RightCurlyBracket)
-                {
-                    var key = Eat().ToString();
-                    Expr value;
-                    if (_current.Kind == TokenKind.Colon)
-                    {
-                        Eat(TokenKind.Colon);
-                        value = ParseExpr();
-                    }
-                    else
-                    {
-                        value = new IdentifierExpr(key);
-                    }
-                    fields.Add(key, value);
-                    if (_current.Kind == TokenKind.Comma)
-                    {
-                        Eat(TokenKind.Comma);
-                    }
-                }
-                Expect(TokenKind.RightCurlyBracket);
-                return new StructExpr(left, fields);
             
             case TokenKind.LeftRoundBracket:
                 Eat(TokenKind.LeftRoundBracket);

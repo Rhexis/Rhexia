@@ -312,11 +312,11 @@ public class Lexer
             "false" => TokenKind.False,
             "null" => TokenKind.Null,
             
+            "struct" => TokenKind.Struct,
             "function" => TokenKind.Function,
             "in" => TokenKind.In,
             "if" => TokenKind.If,
             "else" => TokenKind.Else,
-            
             "return" => TokenKind.Return,
             
             _ => TokenKind.EndOfFile

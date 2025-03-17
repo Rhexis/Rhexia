@@ -48,7 +48,7 @@ internal static class Program
                 print("For:[" + i + "]");
             }
             
-            object {
+            struct object {
                 name: "Rhexis",
                 age: 30,
             }
