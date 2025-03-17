@@ -138,8 +138,7 @@ public class Parser
     private ReturnStatement ParseReturn()
     {
         Eat(TokenKind.Return);
-        // TODO :: Implement
-        return null;//new ReturnStatement();
+        return new ReturnStatement(ParseExpr());
     }
 
     private FunctionStatement ParseFunction(bool hasIdentifier)
