@@ -1,3 +1,5 @@
+using Rhexia.v2.Lex;
+
 namespace Rhexia.v2.Ast;
 
 public enum Op
@@ -9,6 +11,9 @@ public enum Op
     Divide,
     Multiply,
     Modulus,
+    
+    Increment,
+    Decrement,
     
     LessThan,
     GreaterThan,
@@ -23,4 +28,32 @@ public enum Op
     
     In,
     NotIn,
+}
+
+public static class OpExtensions
+{
+    public static Op ToOp(this TokenKind kind)
+    {
+        return kind switch
+        {
+            TokenKind.Plus => Op.Plus,
+            TokenKind.Minus => Op.Minus,
+            TokenKind.Multiply => Op.Multiply,
+            TokenKind.Divide => Op.Divide,
+            TokenKind.Not => Op.NotEqualTo,
+            TokenKind.Modulus => Op.Modulus,
+            TokenKind.EqualTo => Op.EqualTo,
+            TokenKind.Assign => Op.Assign,
+            TokenKind.LessThan => Op.LessThan,
+            TokenKind.GreaterThan => Op.GreaterThan,
+            TokenKind.LessThanOrEqualTo => Op.LessThanOrEqualTo,
+            TokenKind.GreaterThanOrEqualTo => Op.GreaterThanOrEqualTo,
+            TokenKind.And => Op.And,
+            TokenKind.Or => Op.Or,
+            TokenKind.Increment => Op.Increment,
+            TokenKind.Decrement => Op.Decrement,
+            
+            _ => throw new Exception($"Unexpected token: {kind}")
+        };
+    }
 }

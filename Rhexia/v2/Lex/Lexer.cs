@@ -72,8 +72,6 @@ public class Lexer
             ';' => TokenKind.Semicolon,
             '(' => TokenKind.LeftRoundBracket,
             ')' => TokenKind.RightRoundBracket,
-            '+' => TokenKind.Plus,
-            '-' => TokenKind.Minus,
             '*' => TokenKind.Multiply,
             '/' => TokenKind.Divide,
             '%' => TokenKind.Modulus,
@@ -98,9 +96,9 @@ public class Lexer
         {
             if (_next == '=')
             {
+                token = new Token(TokenKind.EqualTo, $"{_current}{_next}");
                 // Eat the first '='
                 Next();
-                token = new Token(TokenKind.EqualTo, $"{_current}{_next}");
             }
             else
             {
@@ -111,9 +109,9 @@ public class Lexer
         {
             if (_next == '=')
             {
+                token = new Token(TokenKind.GreaterThanOrEqualTo, $"{_current}{_next}");
                 // Eat the '>'
                 Next();
-                token = new Token(TokenKind.GreaterThanOrEqualTo, $"{_current}{_next}");
             }
             else
             {
@@ -124,9 +122,9 @@ public class Lexer
         {
             if (_next == '=')
             {
+                token = new Token(TokenKind.LessThanOrEqualTo, $"{_current}{_next}");
                 // Eat the '<'
                 Next();
-                token = new Token(TokenKind.LessThanOrEqualTo, $"{_current}{_next}");
             }
             else
             {
@@ -137,9 +135,9 @@ public class Lexer
         {
             if (_next == '=')
             {
+                token = new Token(TokenKind.NotEqualTo, $"{_current}{_next}");
                 // Eat the '!'
                 Next();
-                token = new Token(TokenKind.NotEqualTo, $"{_current}{_next}");
             }
             else
             {
@@ -150,9 +148,9 @@ public class Lexer
         {
             if (_next == '&')
             {
+                token = new Token(TokenKind.And, $"{_current}{_next}");
                 // Eat the first '&'
                 Next();
-                token = new Token(TokenKind.And, $"{_current}{_next}");
             }
             else
             {
@@ -163,13 +161,39 @@ public class Lexer
         {
             if (_next == '|')
             {
+                token = new Token(TokenKind.Or, $"{_current}{_next}");
                 // Eat the first '|'
                 Next();
-                token = new Token(TokenKind.Or, $"{_current}{_next}");
             }
             else
             {
                 token = new Token(TokenKind.Pipe, _current.ToString());
+            }
+        }
+        else if (_current == '+')
+        {
+            if (_next == '+')
+            {
+                token = new Token(TokenKind.Increment, $"{_current}{_next}");
+                // Eat the first '+'
+                Next();
+            }
+            else
+            {
+                token = new Token(TokenKind.Plus, _current.ToString());
+            }
+        }
+        else if (_current == '-')
+        {
+            if (_next == '-')
+            {
+                token = new Token(TokenKind.Decrement, $"{_current}{_next}");
+                // Eat the first '-'
+                Next();
+            }
+            else
+            {
+                token = new Token(TokenKind.Minus, _current.ToString());
             }
         }
         

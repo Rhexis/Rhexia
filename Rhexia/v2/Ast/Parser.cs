@@ -103,8 +103,19 @@ public class Parser
     private ForStatement ParseFor()
     {
         Eat(TokenKind.For);
-        // TODO :: Implement
-        return null;//new ForStatement();
+
+        Eat(TokenKind.LeftRoundBracket);
+        var init = ParseVar();
+        Eat(TokenKind.Semicolon);
+        var condition = ParseExpr();
+        Eat(TokenKind.Semicolon);
+        var increment = ParseExpr();
+        Eat(TokenKind.RightRoundBracket);
+        
+        var block = ParseBlock();
+        Expect(TokenKind.RightCurlyBracket);
+        
+        return new ForStatement(init, condition, increment, block);
     }
 
     private IfElseStatement ParseIfElse()
@@ -119,12 +130,16 @@ public class Parser
         
         if (_next.Kind != TokenKind.Else)
         {
+            Expect(TokenKind.RightCurlyBracket);
             return new IfElseStatement(condition, then);
         }
 
         Eat(TokenKind.RightCurlyBracket);
         Eat(TokenKind.Else);
-        return new IfElseStatement(condition, then, ParseBlock());
+        var block = ParseBlock();
+        Expect(TokenKind.RightCurlyBracket);
+        
+        return new IfElseStatement(condition, then, block);
     }
 
     private ReturnStatement ParseReturn()
@@ -275,6 +290,12 @@ public class Parser
     {
         switch (_current.Kind)
         {
+            case TokenKind.Increment:
+                return new PostfixExpr(left, Eat(TokenKind.Increment).Kind.ToOp());
+            
+            case TokenKind.Decrement:
+                return new PostfixExpr(left, Eat(TokenKind.Decrement).Kind.ToOp());
+            
             case TokenKind.Dot:
                 Eat(TokenKind.Dot);
                 return new GetExpr(left, Eat(TokenKind.Identifier).Literal.ToString()!);
@@ -351,7 +372,7 @@ public class Parser
             case TokenKind.Or:
                 var token = _current;
                 Next();
-                return new InfixExpr(left, ConvertTokenKindToOp(token.Kind), ParseExpr());
+                return new InfixExpr(left, token.Kind.ToOp(), ParseExpr());
 
             case TokenKind.Assign:
                 Next();
@@ -360,29 +381,5 @@ public class Parser
             default:
                 return null;
         }
-    }
-
-    private Op ConvertTokenKindToOp(TokenKind kind)
-    {
-        return kind switch
-        {
-            
-            TokenKind.Plus => Op.Plus,
-            TokenKind.Minus => Op.Minus,
-            TokenKind.Multiply => Op.Multiply,
-            TokenKind.Divide => Op.Divide,
-            TokenKind.Not => Op.NotEqualTo,
-            TokenKind.Modulus => Op.Modulus,
-            TokenKind.EqualTo => Op.EqualTo,
-            TokenKind.Assign => Op.Assign,
-            TokenKind.LessThan => Op.LessThan,
-            TokenKind.GreaterThan => Op.GreaterThan,
-            TokenKind.LessThanOrEqualTo => Op.LessThanOrEqualTo,
-            TokenKind.GreaterThanOrEqualTo => Op.GreaterThanOrEqualTo,
-            TokenKind.And => Op.And,
-            TokenKind.Or => Op.Or,
-            
-            _ => throw new Exception($"Unexpected token: {kind}")
-        };
     }
 }

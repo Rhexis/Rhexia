@@ -68,6 +68,11 @@ internal static class Program
             var arr = [1, 2, 3];
             
             if (!false) { print("true"); }
+            
+            for (var i = 0; i < 10; i++)
+            {
+                print("For:[" + i + "]");
+            }
         """;
 
         var lex = new Lexer(code);

@@ -10,55 +10,58 @@ public record Token(TokenKind Kind, object Literal)
 
 public enum TokenKind
 {
-    Identifier,
-    Var,
-    Assign,
+    Identifier, // A string of letters that isn't reserved word
+    Var,        // var
+    Assign,     // =
     
-    LeftCurlyBracket,
-    RightCurlyBracket,
-    LeftRoundBracket,
-    RightRoundBracket,
-    LeftSquareBracket,
-    RightSquareBracket,
+    LeftCurlyBracket,     // {
+    RightCurlyBracket,    // }
+    LeftRoundBracket,     // (
+    RightRoundBracket,    // )
+    LeftSquareBracket,    // [
+    RightSquareBracket,   // ]
     
-    LessThan,
-    GreaterThan,
-    LessThanOrEqualTo,
-    GreaterThanOrEqualTo,
-    EqualTo,
-    NotEqualTo,
+    LessThan,             // <
+    GreaterThan,          // >
+    LessThanOrEqualTo,    // <=
+    GreaterThanOrEqualTo, // >=
+    EqualTo,              // ==
+    NotEqualTo,           // !=
     
-    Not,
-    And,
-    Or,
-    True,
-    False,
-    Null,
+    Not,       // not
+    And,       // and
+    Or,        // or
+    True,      // true
+    False,     // false
+    Null,      // null
     
-    Comma,
-    Colon,
-    Semicolon,
+    Comma,     // ,
+    Colon,     // :
+    Semicolon, // ;
     
-    StringLiteral,
-    NumericLiteral,
+    StringLiteral,  // Everything between "..."
+    NumericLiteral, // 0123456789._
     
-    While,
-    For,
-    If,
-    Else,
+    While,     // while
+    For,       // for
+    If,        // if
+    Else,      // else
     
-    Plus,
-    Minus,
-    Divide,
-    Multiply,
-    Modulus,
+    Plus,      // +
+    Minus,     // -
+    Divide,    // /
+    Multiply,  // *
+    Modulus,   // %
     
-    Function,
-    In,
-    Dot,
-    Ampersand,
-    Pipe,
-    Return,
+    Increment, // ++
+    Decrement, // --
     
-    EndOfFile,
+    Function,  // function
+    In,        // in
+    Dot,       // .
+    Ampersand, // &
+    Pipe,      // |
+    Return,    // return
+    
+    EndOfFile, // EOF char '\0'
 }
