@@ -298,8 +298,6 @@ public class Parser
                 return new GetExpr(left, Eat(TokenKind.Identifier).Literal.ToString()!);
             
             case TokenKind.LeftSquareBracket:
-                // Might be double eating the square brackets? 
-                // TODO :: Need to confirm.
                 Eat(TokenKind.LeftSquareBracket);
                 var index = _current.Kind == TokenKind.RightSquareBracket 
                     ? null
@@ -329,7 +327,7 @@ public class Parser
                         Eat(TokenKind.Comma);
                     }
                 }
-                Eat(TokenKind.RightCurlyBracket);
+                Expect(TokenKind.RightCurlyBracket);
                 return new StructExpr(left, fields);
             
             case TokenKind.LeftRoundBracket:

@@ -79,6 +79,11 @@ internal static class Program
             {
                 print("For:[" + i + "]");
             }
+            
+            object {
+                name: "Rhexis",
+                age: 30,
+            }
         """;
 
         var lex = new Lexer(code);
