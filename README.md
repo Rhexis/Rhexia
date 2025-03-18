@@ -1,6 +1,8 @@
 # Rhexia (Rhex-I-A)
 
-Rhexia or Rhex Intelligence Artificielle, is a interpreted language written in C#.
+Rhexis is the interpreter for the language RIA, pronounced aria.
+
+RIA stands for Rhexis Intelligence Artificielle, is a interpreted language written in C#.
 
 Code Sample:
 ```
@@ -16,7 +18,7 @@ function greet(name)
 greet(name);
 
 print("Age is: " + age);
-print("Last year your age was: " + age - daysOld);
+print("Last year your age was: " + age - 1);
 print("Name is: " + name);
 
 if (age == 30)
@@ -25,13 +27,44 @@ if (age == 30)
 }
 else
 {
-    print(age + " is " + age * 365 + " days old");
+    var ageInDays = age * 365;
+    print(age + " is " + ageInDays + " days old");
 }
 
-var arr = [1, 2, 3];
-            
-for(i in range(age))
+if (!false) { print("true"); }
+
+function addOne(num)
 {
-    print(i);
+    return num + 1;
+}
+
+print(addOne(5));
+
+var func = function()
+{
+    print("I am a closure");
+}
+
+func();
+
+var arr = [1, 2, 3];
+arr[0] = 100;
+print(arr[0]);
+
+var idx = 0;
+while (idx < arr.Length)
+{
+    print(arr[idx]);
+    idx++;
+}
+
+for (var i = 0; i < 10; i++)
+{
+    print("For:[" + i + "]");
+}
+
+struct object {
+    name: "Rhexis",
+    age: 30,
 }
 ```
