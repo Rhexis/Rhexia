@@ -1,5 +1,6 @@
 ﻿using Rhexia.v2.Ast;
 using Rhexia.v2.Lex;
+using Rhexia.v2.Runtime;
 
 namespace Rhexia;
 
@@ -71,6 +72,9 @@ internal static class Program
         var lex = new Lexer(code);
         var parser = new Parser(lex);
         var ast = parser.Parse();
+        var interpreter = new Interpreter(ast);
+
+        interpreter.Execute();
         
         Console.WriteLine(ast);
     }

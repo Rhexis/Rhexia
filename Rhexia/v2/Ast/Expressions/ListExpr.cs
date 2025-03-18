@@ -8,10 +8,10 @@ public record ListExpr(List<Expr> Items) : Expr
     }
 }
 
-public record ListIndexExpr(Expr Expr, Expr? Index) : Expr
+public record ListIndexExpr(IdentifierExpr Identifier, Expr? Index) : Expr
 {
     public override string ToString()
     {
-        return $"{{ Expr: {Expr}, Index: [{Index}] }}";
+        return $"List Index: {{ Identifier: {Identifier}, Index: [{Index}] }}";
     }
 }

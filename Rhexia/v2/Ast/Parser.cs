@@ -335,7 +335,7 @@ public class Parser
                     ? null
                     : ParseExpr();
                 Eat(TokenKind.RightSquareBracket);
-                return new ListIndexExpr(left, index);
+                return new ListIndexExpr((IdentifierExpr)left, index);
             
             case TokenKind.LeftRoundBracket:
                 Eat(TokenKind.LeftRoundBracket);
