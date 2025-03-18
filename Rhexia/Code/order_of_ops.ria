@@ -1,0 +1,10 @@
+var age = 32;
+
+if (age == 30)
+{
+    print("You are 30 years old!");
+}
+else
+{
+    print(age + " is " + age * 365 + " days old");
+}

@@ -13,4 +13,13 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Code\sample.ria">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Code\order_of_ops.ria">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
