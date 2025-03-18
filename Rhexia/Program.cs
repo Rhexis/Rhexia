@@ -33,6 +33,27 @@ internal static class Program
                 print(age + " is " + age * 365 + " days old");
             }
             
+            if (!false) { print("true"); }
+            
+            function addOne(num)
+            {
+                return num + 1;
+            }
+            
+            print(addOne(5));
+        
+            var func = function()
+            {
+                print("I am a closure");
+            }
+            
+            func();
+        
+            for (var i = 0; i < 10; i++)
+            {
+                print("For:[" + i + "]");
+            }
+            
             var arr = [1, 2, 3];
             arr[0] = 100;
             var idx = 0;
@@ -41,34 +62,15 @@ internal static class Program
                 print(arr[idx]);
                 idx++;
             }
-            
-            if (!false) { print("true"); }
-            
-            for (var i = 0; i < 10; i++)
-            {
-                print("For:[" + i + "]");
-            }
-            
+        
             struct object {
                 name: "Rhexis",
                 age: 30,
             }
-            
-            function addOne(num)
-            {
-                return num + 1;
-            }
-            
-            var func = function()
-            {
-                print("I am a closure");
-            }
-            
-            func();
-            
-            print(addOne(5));
         """;
 
+        // TODO :: Fix issue with order of operations.
+        // In this example, it tries to multiply age by "365 days old".
         var code2 = """
             var age = 32;            
                     
@@ -82,7 +84,7 @@ internal static class Program
             }
         """;
         
-        var lex = new Lexer(code2);
+        var lex = new Lexer(code);
         var parser = new Parser(lex);
         var ast = parser.Parse();
         var interpreter = new Interpreter(ast);

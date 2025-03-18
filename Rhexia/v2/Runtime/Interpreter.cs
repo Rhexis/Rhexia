@@ -94,8 +94,7 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             case StatementKind.Return:
                 var returnStatement = (ReturnStatement)statement;
-                // TODO :: IMPLEMENT
-                break;
+                return CompileExpr(returnStatement.Expr);
             
             default:
                 throw new Exception($"Unknown statement kind: {statement.Kind}");
@@ -304,15 +303,17 @@ public class Interpreter(AbstractSyntaxTree ast)
             {
                 innerEnv.Add(param.Name, arg);
             }
-
+            
+            // Change to inner environment
+            Env = innerEnv;
             Value? result = null;
             foreach (var statement in func.Body)
             {
                 result = Interpret(statement);
             }
-            
-            // Reset environment
+            // Reset back to outer environment
             Env = outerEnv;
+            
             return result;
         }
 
