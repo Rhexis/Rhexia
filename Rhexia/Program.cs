@@ -30,7 +30,8 @@ internal static class Program
             }
             else
             {
-                print(age + " is " + age * 365 + " days old");
+                var ageInDays = age * 365;
+                print(age + " is " + ageInDays + " days old");
             }
             
             if (!false) { print("true"); }
