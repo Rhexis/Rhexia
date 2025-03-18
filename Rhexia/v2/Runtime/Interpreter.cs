@@ -1,32 +1,38 @@
 using Rhexia.v2.Ast;
 using Rhexia.v2.Ast.Expressions;
 using Rhexia.v2.Ast.Statements;
+using Rhexia.v2.Runtime.StandardLib;
 using Rhexia.v2.Runtime.Values;
 
 namespace Rhexia.v2.Runtime;
 
 public class Interpreter(AbstractSyntaxTree ast)
 {
-    public Environment Env { get; } = new();
+    public Environment Env { get; set; } = new();
+
+    public Dictionary<string, Value> Globals { get; } = new()
+    {
+        ["print"] = new NativeFunctionValue(Functions.Print),
+    };
 
     public bool Execute()
     {
-        try
+        // try
+        // {
+        foreach (var statement in ast.Statements)
         {
-            foreach (var statement in ast.Statements)
-            {
-                Interpret(statement);
-            }
-            return true;
+            Interpret(statement);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
+        return true;
+        // }
+        // catch (Exception e)
+        // {
+        //     Console.WriteLine(e);
+        //     return false;
+        // }
     }
 
-    private void Interpret(Statement statement)
+    private Value? Interpret(Statement statement)
     {
         switch (statement.Kind)
         {
@@ -37,8 +43,22 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             case StatementKind.Function:
                 var functionStatement = (FunctionStatement)statement;
-                // TODO :: IMPLEMENT
+                Globals.Add
+                (
+                    functionStatement.Name,
+                    new FunctionValue(functionStatement.Name, functionStatement.Parameters, functionStatement.Body)
+                );
                 break;
+            
+            // TODO :: Work out if we need to shift struct to statement from expr
+            // case StatementKind.Struct:
+            //     var structStatement = (StructStatement)statement;
+            //     Globals.Add
+            //     (
+            //         structStatement.Name,
+            //         new StructValue(structStatement.Name, structStatement.Fields, structStatement.Methods)
+            //     );
+            //     break;
             
             case StatementKind.For:
                 var forStatement = (ForStatement)statement;
@@ -69,18 +89,19 @@ public class Interpreter(AbstractSyntaxTree ast)
                 }
                 break;
             
+            case StatementKind.Expression:
+                return CompileExpr(((ExprStatement)statement).Expr);
+            
             case StatementKind.Return:
                 var returnStatement = (ReturnStatement)statement;
                 // TODO :: IMPLEMENT
                 break;
             
-            case StatementKind.Expression:
-                CompileExpr(((ExprStatement)statement).Expr);
-                break;
-            
             default:
                 throw new Exception($"Unknown statement kind: {statement.Kind}");
         }
+
+        return null;
     }
 
     private Value CompileExpr(Expr expr)
@@ -125,11 +146,6 @@ public class Interpreter(AbstractSyntaxTree ast)
             return list.Values.ElementAt(Convert.ToInt32(index.Value));
         }
 
-        if (expr is GetExpr getExpr)
-        {
-            // TODO :: Handle Struct Expr then this.
-        }
-
         if (expr is AssignmentExpr assignmentExpr)
         {
             var value = CompileExpr(assignmentExpr.Right);
@@ -140,7 +156,12 @@ public class Interpreter(AbstractSyntaxTree ast)
             }
             else if (assignmentExpr.Left is ListIndexExpr assignListIndexExpr)
             {
-                // TODO :: IMPLEMENT
+                var list = (ListValue)CompileExpr(assignListIndexExpr.Identifier);
+                if (assignListIndexExpr.Index != null)
+                {
+                    var index = (NumericValue)CompileExpr(assignListIndexExpr.Index);
+                    list.Values[(int)index.Value] = value;
+                }
             }
             else if (assignmentExpr.Left is GetExpr assignGetExpr)
             {
@@ -154,7 +175,16 @@ public class Interpreter(AbstractSyntaxTree ast)
 
         if (expr is CallExpr callExpr)
         {
-            // TODO :: IMPLEMENT
+            var identifier = (IdentifierExpr)callExpr.Expr;
+            if (!Globals.TryGetValue(identifier.Identifier, out var call)) throw new Exception($"Undefined function call: {identifier.Identifier}");
+            var args = new List<Value>();
+            
+            foreach (var callExprArg in callExpr.Args)
+            {
+                args.Add(CompileExpr(callExprArg));
+            }
+
+            return Call(call, args);
         }
 
         if (expr is StructExpr structExpr)
@@ -164,7 +194,12 @@ public class Interpreter(AbstractSyntaxTree ast)
 
         if (expr is ClosureExpr closureExpr)
         {
-            // TODO :: IMPLEMENT
+            return new FunctionValue("<Closure>", closureExpr.Parameters, closureExpr.Body, Env, null);
+        }
+
+        if (expr is GetExpr getExpr)
+        {
+            // TODO :: Handle Struct Expr then this.
         }
         
         return null;
@@ -229,6 +264,7 @@ public class Interpreter(AbstractSyntaxTree ast)
             _ => throw new Exception("Unhandled infix expression"),
         };
     }
+    
     private Value? CompilePostfixExpr(Expr expr)
     {
         if (expr is not PostfixExpr postfixExpr) return null;
@@ -241,5 +277,50 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             _ => throw new Exception($"Unhandled postfix operator: {postfixExpr.Op}"),
         };
+    }
+
+    private Value? Call(Value? call, List<Value> args)
+    {
+        if (call is FunctionValue func)
+        {
+            if (func.Parameters.Count != args.Count)
+            {
+                throw new Exception($"Invalid number of arguments for function {func.Name}");
+            }
+
+            // Snapshot environment
+            var outerEnv = Env;
+            
+            var innerEnv = func.Env ?? new Environment();
+            // TODO :: think more about this.
+            if (func.Context != null) //&& func.Parameters.Any())
+            {
+                var context = CompileExpr(func.Context);
+                innerEnv.Add("this", context);
+            }
+
+            var zipped = func.Parameters.Where(x => x.Name != "this").Zip(args);
+            foreach (var (param, arg) in zipped)
+            {
+                innerEnv.Add(param.Name, arg);
+            }
+
+            Value? result = null;
+            foreach (var statement in func.Body)
+            {
+                result = Interpret(statement);
+            }
+            
+            // Reset environment
+            Env = outerEnv;
+            return result;
+        }
+
+        if (call is NativeFunctionValue nativeFunc)
+        {
+            return nativeFunc.Call(args);
+        }
+        
+        return null;
     }
 }

@@ -8,7 +8,6 @@ internal static class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
         var code = """
             var name = "Rhexis";
             var age = 30;
@@ -22,7 +21,7 @@ internal static class Program
             greet(name);
             
             print("Age is: " + age);
-            print("Last year your age was: " + age - daysOld);
+            print("Last year your age was: " + age - 1);
             print("Name is: " + name);
             
             if (age == 30)
@@ -35,6 +34,7 @@ internal static class Program
             }
             
             var arr = [1, 2, 3];
+            arr[0] = 100;
             var idx = 0;
             while (idx < arr.Length)
             {
@@ -69,7 +69,20 @@ internal static class Program
             print(addOne(5));
         """;
 
-        var lex = new Lexer(code);
+        var code2 = """
+            var age = 32;            
+                    
+            if (age == 30)
+            {
+                print("You are 30 years old!");
+            }
+            else
+            {
+                print(age + " is " + age * 365 + " days old");
+            }
+        """;
+        
+        var lex = new Lexer(code2);
         var parser = new Parser(lex);
         var ast = parser.Parse();
         var interpreter = new Interpreter(ast);

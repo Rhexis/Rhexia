@@ -11,4 +11,5 @@ public enum ValueType
     Function,
     Struct,
     List,
+    Native,
 }

@@ -8,7 +8,7 @@ public class Environment
 
     public void Add(string key, Value value)
     {
-        if (Values.TryAdd(key, value))
+        if (!Values.TryAdd(key, value))
         {
             throw new InvalidOperationException($"Could not add {{ key: {key}, value: {value} }}");
         }
