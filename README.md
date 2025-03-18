@@ -1,8 +1,8 @@
 # Rhexia (Rhex-I-A)
 
-Rhexis is the interpreter for the language RIA, pronounced aria.
+Rhexis is the interpreter for the language RIA, pronounced like aria.
 
-RIA stands for Rhexis Intelligence Artificielle, is a interpreted language written in C#.
+RIA stands for Rhexis Intelligence Artificielle, it is an interpreted language written in C#.
 
 Code Sample:
 ```
