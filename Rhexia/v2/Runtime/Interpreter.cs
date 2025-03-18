@@ -38,7 +38,15 @@ public class Interpreter(AbstractSyntaxTree ast)
         {
             case StatementKind.Var:
                 var varStatement = (VarStatement)statement;
-                Env.Add(varStatement.Name, CompileExpr(varStatement.Expr));
+                var compiled = CompileExpr(varStatement.Expr);
+                if (compiled is not FunctionValue)
+                {
+                    Env.Add(varStatement.Name, compiled);
+                }
+                else
+                {
+                    Globals.Add(varStatement.Name, compiled);
+                }
                 break;
             
             case StatementKind.Function:
@@ -152,8 +160,10 @@ public class Interpreter(AbstractSyntaxTree ast)
             if (assignmentExpr.Left is IdentifierExpr assignIdentifierExpr)
             {
                 Env.Add(assignIdentifierExpr.Identifier, value);
+                return new NullValue();
             }
-            else if (assignmentExpr.Left is ListIndexExpr assignListIndexExpr)
+            
+            if (assignmentExpr.Left is ListIndexExpr assignListIndexExpr)
             {
                 var list = (ListValue)CompileExpr(assignListIndexExpr.Identifier);
                 if (assignListIndexExpr.Index != null)
@@ -161,15 +171,16 @@ public class Interpreter(AbstractSyntaxTree ast)
                     var index = (NumericValue)CompileExpr(assignListIndexExpr.Index);
                     list.Values[(int)index.Value] = value;
                 }
+                return new NullValue();
             }
-            else if (assignmentExpr.Left is GetExpr assignGetExpr)
+            
+            if (assignmentExpr.Left is GetExpr assignGetExpr)
             {
                 // TODO :: IMPLEMENT
+                return new NullValue();
             }
-            else
-            {
-                throw new Exception($"Undefined assignment expression: {assignmentExpr}");
-            }
+            
+            throw new Exception($"Undefined assignment expression: {assignmentExpr}");
         }
 
         if (expr is CallExpr callExpr)

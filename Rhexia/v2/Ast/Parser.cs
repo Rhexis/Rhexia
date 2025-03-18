@@ -210,9 +210,9 @@ public class Parser
         while (_current.Kind != TokenKind.EndOfFile && _current.Kind != TokenKind.Semicolon)
         {
             var postfix = ParsePostfixExpr(left);
-            var infix = ParseInfixExpr(left);
+            var infix = ParseInfixExpr(postfix ?? left);
 
-            if (postfix != null)
+            if (postfix != null && infix == null)
             {
                 left = postfix;
             }

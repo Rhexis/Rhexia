@@ -48,19 +48,21 @@ internal static class Program
             }
             
             func();
-        
-            for (var i = 0; i < 10; i++)
-            {
-                print("For:[" + i + "]");
-            }
             
             var arr = [1, 2, 3];
             arr[0] = 100;
+            print(arr[0]);
+            
             var idx = 0;
             while (idx < arr.Length)
             {
                 print(arr[idx]);
                 idx++;
+            }
+        
+            for (var i = 0; i < 10; i++)
+            {
+                print("For:[" + i + "]");
             }
         
             struct object {
