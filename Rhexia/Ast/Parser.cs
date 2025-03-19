@@ -84,6 +84,7 @@ public class Parser
             TokenKind.Return => ParseReturn(),
             TokenKind.Var => ParseVar(),
             TokenKind.While => ParseWhile(),
+            TokenKind.Object => ParseObject(),
             _ => new ExprStatement(ParseExpr())
         };
     }
@@ -160,7 +161,7 @@ public class Parser
             }
         }
         Eat(TokenKind.RightRoundBracket);
-        
+        // TODO :: Decide if we should allow nesting functions.
         return new FunctionStatement(name, parameters, ParseBlock());
     }
 
@@ -175,7 +176,41 @@ public class Parser
         return new WhileStatement(condition, ParseBlock());
     }
 
-    private List<Statement> ParseBlock()
+    private ObjectStatement ParseObject()
+    {
+        Eat(TokenKind.Object);
+        var name = new IdentifierExpr(Eat(TokenKind.Identifier).Literal.ToString()!);
+
+        var body = ParseBlock(true);
+        if (body.Any(x => x is not (VarStatement or FunctionStatement)))
+        {
+            throw new Exception("Object can only contain variables & functions");
+        }
+        
+        var bodyVars = body
+            .Where(x => x is VarStatement)
+            .Cast<VarStatement>()
+            .ToList();
+        var fields = new Dictionary<string, VarStatement>();
+        foreach (var bodyVar in bodyVars)
+        {
+            fields.Add(bodyVar.Name, bodyVar);
+        }
+        
+        var bodyFuncs = body
+            .Where(x => x is FunctionStatement)
+            .Cast<FunctionStatement>()
+            .ToList();
+        var functions = new Dictionary<string, FunctionStatement>();
+        foreach (var bodyFunc in bodyFuncs)
+        {
+            functions.Add(bodyFunc.Name, bodyFunc);
+        }
+        
+        return new ObjectStatement(name, fields, functions);
+    }
+
+    private List<Statement> ParseBlock(bool nested = false)
     {
         Eat(TokenKind.LeftCurlyBracket);
         var block = new List<Statement>();
@@ -191,6 +226,11 @@ public class Parser
             {
                 Eat(TokenKind.Semicolon);
             }
+
+            if (_current.Kind == TokenKind.RightCurlyBracket && nested)
+            {
+                Eat(TokenKind.RightCurlyBracket);
+            }
         }
         // Only expect the closing '}', don't eat it.
         // Leave eating up to the discretion of the caller
@@ -202,7 +242,6 @@ public class Parser
     {
         Expr left = ParseSimpleExpr()
             ?? ParseClosureExpr()
-            ?? ParseStructExpr()
             ?? ParsePrefixExpr()
             ?? ParseListExpr()
             ?? throw new Exception($"Unknown token: {_current}");
@@ -249,38 +288,6 @@ public class Parser
         
         var function = ParseFunction(false);
         return new ClosureExpr(function.Parameters, function.Body);
-    }
-
-    private StructExpr? ParseStructExpr()
-    {
-        if (_current.Kind != TokenKind.Struct) return null;
-        
-        Eat(TokenKind.Struct);
-        var name = new IdentifierExpr(Eat(TokenKind.Identifier).Literal.ToString()!);
-        
-        Eat(TokenKind.LeftCurlyBracket);
-        var fields = new Dictionary<string, Expr>();
-        while (_current.Kind != TokenKind.RightCurlyBracket)
-        {
-            var key = Eat().ToString();
-            Expr value;
-            if (_current.Kind == TokenKind.Colon)
-            {
-                Eat(TokenKind.Colon);
-                value = ParseExpr();
-            }
-            else
-            {
-                value = new IdentifierExpr(key);
-            }
-            fields.Add(key, value);
-            if (_current.Kind == TokenKind.Comma)
-            {
-                Eat(TokenKind.Comma);
-            }
-        }
-        Expect(TokenKind.RightCurlyBracket);
-        return new StructExpr(name, fields);
     }
 
     private Expr? ParsePrefixExpr()

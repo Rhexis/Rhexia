@@ -18,7 +18,5 @@ internal static class Program
         var interpreter = new Interpreter(ast);
 
         interpreter.Execute();
-        
-        Console.WriteLine(ast);
     }
 }

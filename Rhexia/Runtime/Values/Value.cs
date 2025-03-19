@@ -9,7 +9,7 @@ public enum ValueType
     Bool,
     Null,
     Function,
-    Struct,
+    Object,
     List,
     Native,
 }

@@ -57,14 +57,25 @@ while (idx < arr.Length)
     print(arr[idx]);
     idx++;
 }
+print(idx);
 
 for (var i = 0; i < 10; i++)
 {
     print("For:[" + i + "]");
 }
 
-struct object {
-    name: "Rhexis",
-    age: 30,
+object person {
+    var name = "Rhexis";
+    var age = 30;
+    
+    function toString()
+    {
+        print(name + ":" + age);
+    }
+    
+    function test()
+    {
+        print(name + ":" + age);
+    }
 }
 ```

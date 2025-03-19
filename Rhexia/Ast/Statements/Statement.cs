@@ -11,4 +11,5 @@ public enum StatementKind
     IfElse,
     Expression,
     Return,
+    Object,
 }

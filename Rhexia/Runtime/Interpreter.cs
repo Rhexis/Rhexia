@@ -58,16 +58,6 @@ public class Interpreter(AbstractSyntaxTree ast)
                 );
                 break;
             
-            // TODO :: Work out if we need to shift struct to statement from expr
-            // case StatementKind.Struct:
-            //     var structStatement = (StructStatement)statement;
-            //     Globals.Add
-            //     (
-            //         structStatement.Name,
-            //         new StructValue(structStatement.Name, structStatement.Fields, structStatement.Methods)
-            //     );
-            //     break;
-            
             case StatementKind.For:
                 var forStatement = (ForStatement)statement;
                 Interpret(forStatement.Init);
@@ -117,6 +107,15 @@ public class Interpreter(AbstractSyntaxTree ast)
             case StatementKind.Return:
                 var returnStatement = (ReturnStatement)statement;
                 return CompileExpr(returnStatement.Expr);
+            
+            case StatementKind.Object:
+                var objectStatement = (ObjectStatement)statement;
+                // Globals.Add
+                // (
+                //     objectStatement.Name,
+                //     new ObjectValue(objectStatement.Name, objectStatement.Fields, objectStatement.Functions)
+                // );
+                break;
             
             default:
                 throw new Exception($"Unknown statement kind: {statement.Kind}");
@@ -209,11 +208,6 @@ public class Interpreter(AbstractSyntaxTree ast)
             }
 
             return Call(call, args);
-        }
-
-        if (expr is StructExpr structExpr)
-        {
-            // TODO :: IMPLEMENT
         }
 
         if (expr is ClosureExpr closureExpr)

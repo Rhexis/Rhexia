@@ -312,7 +312,7 @@ public class Lexer
             "false" => TokenKind.False,
             "null" => TokenKind.Null,
             
-            "struct" => TokenKind.Struct,
+            "object" => TokenKind.Object,
             "function" => TokenKind.Function,
             "in" => TokenKind.In,
             "if" => TokenKind.If,

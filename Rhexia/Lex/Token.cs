@@ -56,7 +56,7 @@ public enum TokenKind
     Increment, // ++
     Decrement, // --
     
-    Struct,    // struct
+    Object,    // object
     Function,  // function
     In,        // in
     Dot,       // .
