@@ -38,14 +38,14 @@ public class Interpreter(AbstractSyntaxTree ast)
         {
             case StatementKind.Var:
                 var varStatement = (VarStatement)statement;
-                var compiled = CompileExpr(varStatement.Expr);
-                if (compiled is not FunctionValue)
+                var varValue = CompileExpr(varStatement.Expr);
+                if (varValue is not FunctionValue)
                 {
-                    Env.Add(varStatement.Name, compiled);
+                    Env.Add(varStatement.Name, varValue);
                 }
                 else
                 {
-                    Globals.Add(varStatement.Name, compiled);
+                    Globals.Add(varStatement.Name, varValue);
                 }
                 break;
             
@@ -70,7 +70,15 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             case StatementKind.For:
                 var forStatement = (ForStatement)statement;
-                // TODO :: IMPLEMENT
+                Interpret(forStatement.Init);
+                while (((BoolValue)CompileExpr(forStatement.Condition)).Value)
+                {
+                    foreach (var forBodyStatement in forStatement.Body)
+                    {
+                        Interpret(forBodyStatement);
+                    }
+                    CompileExpr(forStatement.Increment);
+                }
                 break;
             
             case StatementKind.While:
@@ -136,7 +144,7 @@ public class Interpreter(AbstractSyntaxTree ast)
             BoolExpr boolExpr => new BoolValue(boolExpr.Literal),
             IdentifierExpr identifierExpr => Env.Get(identifierExpr.Identifier) ??
                                              throw new Exception($"Undefined variable: {identifierExpr.Identifier}"),
-            _ => null!
+            _ => null
         };
     }
 
