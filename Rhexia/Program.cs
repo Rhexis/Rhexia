@@ -1,6 +1,6 @@
-﻿using Rhexia.v2.Ast;
-using Rhexia.v2.Lex;
-using Rhexia.v2.Runtime;
+﻿using Rhexia.Ast;
+using Rhexia.Lex;
+using Rhexia.Runtime;
 
 namespace Rhexia;
 
