@@ -14,6 +14,11 @@ public class Environment
         }
     }
 
+    public void Set(string key, Value value)
+    {
+        Values[key] = value;
+    }
+
     public Value? Get(string key)
     {
         return Values.GetValueOrDefault(key);

@@ -75,7 +75,13 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             case StatementKind.While:
                 var whileStatement = (WhileStatement)statement;
-                // TODO :: IMPLEMENT
+                while (((BoolValue)CompileExpr(whileStatement.Condition)).Value)
+                {
+                    foreach (var whileBodyStatement in whileStatement.Body)
+                    {
+                        Interpret(whileBodyStatement);
+                    }
+                }
                 break;
             
             case StatementKind.IfElse:
@@ -204,12 +210,21 @@ public class Interpreter(AbstractSyntaxTree ast)
 
         if (expr is ClosureExpr closureExpr)
         {
-            return new FunctionValue("<Closure>", closureExpr.Parameters, closureExpr.Body, Env, null);
+            return new FunctionValue("<Closure>", closureExpr.Parameters, closureExpr.Body, Env);
         }
 
         if (expr is GetExpr getExpr)
         {
-            // TODO :: Handle Struct Expr then this.
+            var obj = CompileExpr(getExpr.Expr);
+            // TODO :: Rethink this
+            if (obj is ListValue list)
+            {
+                if (getExpr.Field == "Length")
+                {
+                    return new NumericValue(list.Values.Count);
+                }
+            }
+            throw new Exception($"Unhandled get expression: {getExpr.Expr}");
         }
         
         return null;
@@ -279,14 +294,22 @@ public class Interpreter(AbstractSyntaxTree ast)
     {
         if (expr is not PostfixExpr postfixExpr) return null;
 
-        var left = CompileExpr(postfixExpr.Expr);
-        return postfixExpr.Op switch
+        var left = (NumericValue)CompileExpr(postfixExpr.Expr);
+        var identifier = ((IdentifierExpr)postfixExpr.Expr).Identifier;
+
+        switch (postfixExpr.Op)
         {
-            Op.Increment => new NumericValue(((NumericValue)left).Value + 1),
-            Op.Decrement => new NumericValue(((NumericValue)left).Value - 1),
+            case Op.Increment:
+                Env.Set(identifier, new NumericValue(left.Value + 1));
+                return new NumericValue(left.Value);
             
-            _ => throw new Exception($"Unhandled postfix operator: {postfixExpr.Op}"),
-        };
+            case Op.Decrement:
+                Env.Set(identifier, new NumericValue(left.Value - 1));
+                return new NumericValue(left.Value);
+            
+            default:
+                throw new Exception($"Unhandled postfix operator: {postfixExpr.Op}");
+        }
     }
 
     private Value? Call(Value? call, List<Value> args)
