@@ -4,7 +4,7 @@ using ValueType = Rhexia.Runtime.Values.ValueType;
 
 namespace Rhexia.Runtime.StandardLib;
 
-public static class Functions
+public static class NativeFunctions
 {
     public static Value Print(List<Value> args)
     {

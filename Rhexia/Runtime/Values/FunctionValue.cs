@@ -8,7 +8,5 @@ public record FunctionValue
 (
     string Name,
     List<Parameter> Parameters,
-    List<Statement> Body,
-    Environment? Env = null,
-    Expr? Context = null
+    List<Statement> Body
 ) : Value(ValueType.Function);

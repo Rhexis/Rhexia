@@ -3,17 +3,14 @@ using Rhexia.Ast.Expressions;
 using Rhexia.Ast.Statements;
 using Rhexia.Runtime.StandardLib;
 using Rhexia.Runtime.Values;
+using ValueType = Rhexia.Runtime.Values.ValueType;
 
 namespace Rhexia.Runtime;
 
 public class Interpreter(AbstractSyntaxTree ast)
 {
     public Environment Env { get; set; } = new();
-
-    public Dictionary<string, Value> Globals { get; } = new()
-    {
-        ["print"] = new NativeFunctionValue(Functions.Print),
-    };
+    public Dictionary<string, ObjectValue> Objects { get; } = [];
 
     public bool Execute()
     {
@@ -45,16 +42,17 @@ public class Interpreter(AbstractSyntaxTree ast)
                 }
                 else
                 {
-                    Globals.Add(varStatement.Name, varValue);
+                    Env.Add(varStatement.Name, varValue, ValueType.Function);
                 }
                 break;
             
             case StatementKind.Function:
                 var functionStatement = (FunctionStatement)statement;
-                Globals.Add
+                Env.Add
                 (
                     functionStatement.Name,
-                    new FunctionValue(functionStatement.Name, functionStatement.Parameters, functionStatement.Body)
+                    new FunctionValue(functionStatement.Name, functionStatement.Parameters, functionStatement.Body),
+                    ValueType.Function
                 );
                 break;
             
@@ -110,11 +108,36 @@ public class Interpreter(AbstractSyntaxTree ast)
             
             case StatementKind.Object:
                 var objectStatement = (ObjectStatement)statement;
-                // Globals.Add
-                // (
-                //     objectStatement.Name,
-                //     new ObjectValue(objectStatement.Name, objectStatement.Fields, objectStatement.Functions)
-                // );
+                // Snapshot outer env
+                var outerEnv = Env;
+                // Setup object env & change to it
+                var objectEnv = new Environment { Parent = outerEnv };
+                Env = objectEnv;
+                var fields = new List<string>();
+                foreach (var (key, value) in objectStatement.Fields)
+                {
+                    fields.Add(key);
+                    Interpret(value);
+                }
+                var functions = new List<string>();
+                foreach (var (key, value) in objectStatement.Functions)
+                {
+                    functions.Add(key);
+                    Interpret(value);
+                }
+                // Reset back to outer env
+                Env = outerEnv;
+                Objects.Add
+                (
+                    objectStatement.Identifier.Identifier,
+                    new ObjectValue
+                    (
+                        objectStatement.Identifier.Identifier,
+                        fields,
+                        functions,
+                        objectEnv
+                    )
+                );
                 break;
             
             default:
@@ -199,7 +222,8 @@ public class Interpreter(AbstractSyntaxTree ast)
         if (expr is CallExpr callExpr)
         {
             var identifier = (IdentifierExpr)callExpr.Expr;
-            if (!Globals.TryGetValue(identifier.Identifier, out var call)) throw new Exception($"Undefined function call: {identifier.Identifier}");
+            var call = Env.Get(identifier.Identifier, ValueType.Function);
+            if (call is null) throw new Exception($"Undefined function call: {identifier.Identifier}");
             var args = new List<Value>();
             
             foreach (var callExprArg in callExpr.Args)
@@ -212,7 +236,7 @@ public class Interpreter(AbstractSyntaxTree ast)
 
         if (expr is ClosureExpr closureExpr)
         {
-            return new FunctionValue("<Closure>", closureExpr.Parameters, closureExpr.Body, Env);
+            return new FunctionValue("<Closure>", closureExpr.Parameters, closureExpr.Body);
         }
 
         if (expr is GetExpr getExpr)
@@ -323,18 +347,12 @@ public class Interpreter(AbstractSyntaxTree ast)
                 throw new Exception($"Invalid number of arguments for function {func.Name}");
             }
 
-            // Snapshot environment
+            // Snapshot outer environment
             var outerEnv = Env;
             
-            var innerEnv = func.Env ?? new Environment();
-            // TODO :: think more about this.
-            if (func.Context != null) //&& func.Parameters.Any())
-            {
-                var context = CompileExpr(func.Context);
-                innerEnv.Add("this", context);
-            }
-
-            var zipped = func.Parameters.Where(x => x.Name != "this").Zip(args);
+            // Setup inner environment
+            var innerEnv = new Environment { Parent = outerEnv };
+            var zipped = func.Parameters.Zip(args);
             foreach (var (param, arg) in zipped)
             {
                 innerEnv.Add(param.Name, arg);

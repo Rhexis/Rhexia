@@ -3,5 +3,7 @@ namespace Rhexia.Runtime.Values;
 public record ObjectValue
 (
     string Name,
-    Dictionary<string, Value> Fields
+    List<string> Fields,
+    List<string> Functions,
+    Environment Env
 ) : Value(ValueType.Object);
