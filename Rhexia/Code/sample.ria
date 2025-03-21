@@ -46,7 +46,14 @@ print(arr[0]);
 var idx = 0;
 while (idx < arr.Length)
 {
-    print(arr[idx]);
+    if (arr[idx] == 100)
+    {
+        print("idx is " + 1 + " and arr[idx] is " + arr[idx]);
+    }
+    else
+    {
+        print(arr[idx]);
+    }
     idx++;
 }
 print(idx);

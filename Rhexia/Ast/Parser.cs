@@ -69,7 +69,7 @@ public class Parser
         return tree;
     }
 
-    private Statement? ParseStatement()
+    private Statement? ParseStatement(bool nested = false)
     {
         if (_current.Kind is TokenKind.EndOfFile or TokenKind.Semicolon)
         {
@@ -78,13 +78,13 @@ public class Parser
         
         return _current.Kind switch
         {
-            TokenKind.For => ParseFor(),
-            TokenKind.Function => ParseFunction(true),
-            TokenKind.If => ParseIfElse(),
+            TokenKind.For => ParseFor(nested),
+            TokenKind.Function => ParseFunction(true, nested),
+            TokenKind.If => ParseIfElse(nested),
             TokenKind.Return => ParseReturn(),
             TokenKind.Var => ParseVar(),
-            TokenKind.While => ParseWhile(),
-            TokenKind.Object => ParseObject(),
+            TokenKind.While => ParseWhile(nested),
+            TokenKind.Object => ParseObject(nested),
             _ => new ExprStatement(ParseExpr())
         };
     }
@@ -101,7 +101,7 @@ public class Parser
         });
     }
 
-    private ForStatement ParseFor()
+    private ForStatement ParseFor(bool nested = false)
     {
         Eat(TokenKind.For);
 
@@ -113,27 +113,30 @@ public class Parser
         var increment = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
         
-        return new ForStatement(init, condition, increment, ParseBlock());
+        return new ForStatement(init, condition, increment, ParseBlock(nested));
     }
 
-    private IfElseStatement ParseIfElse()
+    private IfElseStatement ParseIfElse(bool nested = false)
     {
         Eat(TokenKind.If);
         Eat(TokenKind.LeftRoundBracket);
         var condition = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
         
-        var then = ParseBlock();
+        var then = ParseBlock(nested);
         
-        if (_next.Kind != TokenKind.Else)
+        if ((_current.Kind != TokenKind.Else && nested) || (_next.Kind != TokenKind.Else && !nested))
         {
             return new IfElseStatement(condition, then);
         }
 
-        Eat(TokenKind.RightCurlyBracket);
+        if (!nested)
+        {
+            Eat(TokenKind.RightCurlyBracket);
+        }
         Eat(TokenKind.Else);
         
-        return new IfElseStatement(condition, then, ParseBlock());
+        return new IfElseStatement(condition, then, ParseBlock(nested));
     }
 
     private ReturnStatement ParseReturn()
@@ -142,7 +145,7 @@ public class Parser
         return new ReturnStatement(ParseExpr());
     }
 
-    private FunctionStatement ParseFunction(bool hasIdentifier)
+    private FunctionStatement ParseFunction(bool hasIdentifier, bool nested = false)
     {
         Eat(TokenKind.Function);
         var name = hasIdentifier ? Eat(TokenKind.Identifier).Literal.ToString()! : "<Closure>";
@@ -161,11 +164,10 @@ public class Parser
             }
         }
         Eat(TokenKind.RightRoundBracket);
-        // TODO :: Decide if we should allow nesting functions.
-        return new FunctionStatement(name, parameters, ParseBlock());
+        return new FunctionStatement(name, parameters, ParseBlock(nested));
     }
 
-    private WhileStatement ParseWhile()
+    private WhileStatement ParseWhile(bool nested = false)
     {
         Eat(TokenKind.While);
         
@@ -173,15 +175,14 @@ public class Parser
         var condition = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
         
-        return new WhileStatement(condition, ParseBlock());
+        return new WhileStatement(condition, ParseBlock(nested));
     }
 
-    private ObjectStatement ParseObject()
+    private ObjectStatement ParseObject(bool nested = false)
     {
         Eat(TokenKind.Object);
         var name = new IdentifierExpr(Eat(TokenKind.Identifier).Literal.ToString()!);
-
-        var body = ParseBlock(true);
+        var body = ParseBlock(nested);
         if (body.Any(x => x is not (VarStatement or FunctionStatement)))
         {
             throw new Exception("Object can only contain variables & functions");
@@ -216,7 +217,9 @@ public class Parser
         var block = new List<Statement>();
         while (_current.Kind != TokenKind.RightCurlyBracket)
         {
-            var statement = ParseStatement();
+            // This needs to be the only place that "nested" is set to true.
+            // This is the secret to parsing one or more nested statement!
+            var statement = ParseStatement(true);
             if (statement != null)
             {
                 block.Add(statement);
@@ -226,15 +229,18 @@ public class Parser
             {
                 Eat(TokenKind.Semicolon);
             }
-
-            if (_current.Kind == TokenKind.RightCurlyBracket && nested)
-            {
-                Eat(TokenKind.RightCurlyBracket);
-            }
         }
-        // Only expect the closing '}', don't eat it.
-        // Leave eating up to the discretion of the caller
-        Expect(TokenKind.RightCurlyBracket);
+
+        if (nested)
+        {
+            Eat(TokenKind.RightCurlyBracket);
+        }
+        else
+        {
+            // Only expect the closing '}', don't eat it.
+            // Leave eating up to the discretion of the caller
+            Expect(TokenKind.RightCurlyBracket);
+        }
         return block;
     }
 
@@ -371,6 +377,7 @@ public class Parser
             case TokenKind.Minus:
             case TokenKind.Multiply:
             case TokenKind.Divide:
+            case TokenKind.Modulus:
             case TokenKind.EqualTo:
             case TokenKind.NotEqualTo:
             case TokenKind.LessThanOrEqualTo:

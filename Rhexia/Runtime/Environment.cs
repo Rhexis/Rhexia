@@ -13,6 +13,7 @@ public class Environment
     public Dictionary<string, Value> Globals { get; } = new()
     {
         ["print"] = new NativeFunctionValue(NativeFunctions.Print),
+        ["write"] = new NativeFunctionValue(NativeFunctions.Write),
     };
 
     public void Add(string key, Value value, ValueType? type = null)

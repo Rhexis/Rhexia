@@ -20,6 +20,9 @@
       <None Update="Code\order_of_ops.ria">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="Code\fizz_buzz.ria">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

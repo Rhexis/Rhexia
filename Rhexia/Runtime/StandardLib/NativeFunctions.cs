@@ -13,6 +13,13 @@ public static class NativeFunctions
         return new NullValue();
     }
     
+    public static Value Write(List<Value> args)
+    {
+        var arg = args.First();
+        Console.Write(arg.AsString());
+        return new NullValue();
+    }
+    
     public static string AsString(this Value value)
     {
         return value.Type switch
