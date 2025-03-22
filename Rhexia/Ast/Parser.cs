@@ -96,7 +96,7 @@ public class Parser
 
         return new VarStatement(name, _current.Kind switch
         {
-            TokenKind.Assign => ParseExpr(Eat(TokenKind.Assign)),
+            TokenKind.Assign => ParseExpr(Precedence.Lowest, Eat(TokenKind.Assign)),
             _ => new NullExpr()
         });
     }
@@ -244,7 +244,7 @@ public class Parser
         return block;
     }
 
-    private Expr ParseExpr(Token? eaten = null)
+    private Expr ParseExpr(Precedence precedence = Precedence.Lowest, Token? eaten = null)
     {
         Expr left = ParseSimpleExpr()
             ?? ParseClosureExpr()
@@ -252,7 +252,9 @@ public class Parser
             ?? ParseListExpr()
             ?? throw new Exception($"Unknown token: {_current}");
 
-        while (_current.Kind != TokenKind.EndOfFile && _current.Kind != TokenKind.Semicolon)
+        while (_current.Kind != TokenKind.EndOfFile
+               && _current.Kind != TokenKind.Semicolon
+               && (int)precedence <= (int)_current.Kind.ToPrecedence())
         {
             var postfix = ParsePostfixExpr(left);
             var infix = ParseInfixExpr(postfix ?? left);
@@ -300,8 +302,8 @@ public class Parser
     {
         return _current.Kind switch
         {
-            TokenKind.Minus => new PrefixExpr(Op.Minus, ParseExpr(Eat(TokenKind.Minus))),
-            TokenKind.Not => new PrefixExpr(Op.Not, ParseExpr(Eat(TokenKind.Not))),
+            TokenKind.Minus => new PrefixExpr(Op.Minus, ParseExpr(Precedence.Prefix, Eat(TokenKind.Minus))),
+            TokenKind.Not => new PrefixExpr(Op.Not, ParseExpr(Precedence.Prefix, Eat(TokenKind.Not))),
             _ => null
         };
     }
@@ -315,7 +317,6 @@ public class Parser
 
         while (_current.Kind != TokenKind.RightSquareBracket)
         {
-            // Should end up in ParsePostfixExpr & return a ListIndexExpr(...)
             items.Add(ParseExpr());
             if (_current.Kind == TokenKind.Comma)
             {
@@ -378,6 +379,10 @@ public class Parser
             case TokenKind.Multiply:
             case TokenKind.Divide:
             case TokenKind.Modulus:
+                var token = _current;
+                Next();
+                return new InfixExpr(left, token.Kind.ToOp(), ParseExpr(token.Kind.ToPrecedence()));
+            
             case TokenKind.EqualTo:
             case TokenKind.NotEqualTo:
             case TokenKind.LessThanOrEqualTo:
@@ -386,10 +391,11 @@ public class Parser
             case TokenKind.GreaterThanOrEqualTo:
             case TokenKind.And:
             case TokenKind.Or:
-                var token = _current;
+                // TODO :: Fix These Token Kind Operations.
+                var token2 = _current;
                 Next();
-                return new InfixExpr(left, token.Kind.ToOp(), ParseExpr());
-
+                return new InfixExpr(left, token2.Kind.ToOp(), ParseExpr(token2.Kind.ToPrecedence()));
+            
             case TokenKind.Assign:
                 Next();
                 return new AssignmentExpr(left, ParseExpr());

@@ -8,7 +8,7 @@ internal static class Program
 {
     private static void Main(string[] args)
     {
-        //var sample = "Code/order_of_ops.ria"; // TODO :: fix this order of ops bug.
+        // var sample = "Code/order_of_ops.ria";
         var sample = "Code/sample.ria";
         // var sample = "Code/fizz_buzz.ria";
         var source = File.ReadAllText(sample);

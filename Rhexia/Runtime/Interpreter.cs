@@ -276,15 +276,15 @@ public class Interpreter(AbstractSyntaxTree ast)
         
         var left = CompileExpr(infixExpr.Left);
         var right = CompileExpr(infixExpr.Right);
-
+        
         return (left, infixExpr.Op, right) switch
         {
             // Numeric
-            (NumericValue l, Op.Plus, NumericValue r) => new NumericValue(l.Value + r.Value),
-            (NumericValue l, Op.Minus, NumericValue r) => new NumericValue(l.Value - r.Value),
             (NumericValue l, Op.Multiply, NumericValue r) => new NumericValue(l.Value * r.Value),
             (NumericValue l, Op.Divide, NumericValue r) => new NumericValue(l.Value / r.Value),
             (NumericValue l, Op.Modulus, NumericValue r) => new NumericValue(l.Value % r.Value),
+            (NumericValue l, Op.Plus, NumericValue r) => new NumericValue(l.Value + r.Value),
+            (NumericValue l, Op.Minus, NumericValue r) => new NumericValue(l.Value - r.Value),
             // String
             (NumericValue l, Op.Plus, StringValue r) => new StringValue($"{l.Value}{r.Value}"),
             (StringValue l, Op.Plus, NumericValue r) => new StringValue($"{l.Value}{r.Value}"),
