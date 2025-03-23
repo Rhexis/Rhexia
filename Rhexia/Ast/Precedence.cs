@@ -5,14 +5,14 @@ namespace Rhexia.Ast;
 public enum Precedence
 {
     Lowest,
-    Statement,
-    Assign,
+    // Statement,
+    // Assign,
     Sum,
     Product,
     LessThanGreaterThan,
     Equals,
-    AndOr,
-    Identifier,
+    // AndOr,
+    // Identifier,
     Prefix,
     Postfix,
     Call,
@@ -33,12 +33,12 @@ public static class PrecedenceExtensions
                 or TokenKind.Decrement 
                 => Precedence.Postfix,
             
-            TokenKind.Identifier
-                => Precedence.Identifier,
+            // TokenKind.Identifier
+            //     => Precedence.Identifier,
             
-            TokenKind.And 
-                or TokenKind.Or 
-                => Precedence.AndOr,
+            // TokenKind.And 
+            //     or TokenKind.Or 
+            //     => Precedence.AndOr,
             
             TokenKind.EqualTo 
                 or TokenKind.NotEqualTo 
@@ -58,13 +58,13 @@ public static class PrecedenceExtensions
                 or TokenKind.Minus 
                 => Precedence.Sum,
             
-            TokenKind.While
-                or TokenKind.If
-                or TokenKind.Else
-                or TokenKind.For
-                => Precedence.Statement,
+            // TokenKind.While
+            //     or TokenKind.If
+            //     or TokenKind.Else
+            //     or TokenKind.For
+            //     => Precedence.Statement,
             
-            TokenKind.Assign => Precedence.Assign,
+            // TokenKind.Assign => Precedence.Assign,
             
             _ => Precedence.Lowest
         };
