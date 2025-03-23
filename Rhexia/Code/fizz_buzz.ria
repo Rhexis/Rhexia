@@ -1,11 +1,15 @@
+var x = 1;
+if (x % 3 != 0 && x % 5 != 0)
+{
+    print("THIS IS A TEST")
+}
+
+
 for (var i = 1; i <= 100; i++)
 {
-    if (i % 3 != 0)
+    if (i % 3 != 0 && i % 5 != 0)
     {
-        if (i % 5 != 0)
-        {
-            write(i);
-        }
+        write(i);
     }
 
     if (i % 3 == 0)
@@ -18,5 +22,5 @@ for (var i = 1; i <= 100; i++)
         write("Buzz");
     }
     
-    write("\n");
+    print("");
 }

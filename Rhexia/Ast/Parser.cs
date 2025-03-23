@@ -85,7 +85,7 @@ public class Parser
             TokenKind.Var => ParseVar(),
             TokenKind.While => ParseWhile(nested),
             TokenKind.Object => ParseObject(nested),
-            _ => new ExprStatement(ParseExpr())
+            _ => new ExprStatement(ParseExprChain())
         };
     }
 
@@ -96,7 +96,7 @@ public class Parser
 
         return new VarStatement(name, _current.Kind switch
         {
-            TokenKind.Assign => ParseExpr(Precedence.Lowest, Eat(TokenKind.Assign)),
+            TokenKind.Assign => ParseExprChain(Precedence.Lowest, Eat(TokenKind.Assign)),
             _ => new NullExpr()
         });
     }
@@ -108,7 +108,7 @@ public class Parser
         Eat(TokenKind.LeftRoundBracket);
         var init = ParseVar();
         Eat(TokenKind.Semicolon);
-        var condition = ParseExpr();
+        var condition = ParseExprChain();
         Eat(TokenKind.Semicolon);
         var increment = ParseExpr();
         Eat(TokenKind.RightRoundBracket);
@@ -120,7 +120,7 @@ public class Parser
     {
         Eat(TokenKind.If);
         Eat(TokenKind.LeftRoundBracket);
-        var condition = ParseExpr();
+        var condition = ParseExprChain();
         Eat(TokenKind.RightRoundBracket);
         
         var then = ParseBlock(nested);
@@ -142,7 +142,7 @@ public class Parser
     private ReturnStatement ParseReturn()
     {
         Eat(TokenKind.Return);
-        return new ReturnStatement(ParseExpr());
+        return new ReturnStatement(ParseExprChain());
     }
 
     private FunctionStatement ParseFunction(bool hasIdentifier, bool nested = false)
@@ -172,7 +172,7 @@ public class Parser
         Eat(TokenKind.While);
         
         Eat(TokenKind.LeftRoundBracket);
-        var condition = ParseExpr();
+        var condition = ParseExprChain();
         Eat(TokenKind.RightRoundBracket);
         
         return new WhileStatement(condition, ParseBlock(nested));
@@ -244,17 +244,50 @@ public class Parser
         return block;
     }
 
+    private Expr ParseExprChain(Precedence precedence = Precedence.Lowest, Token? eaten = null)
+    {
+        var expr = ParseRelationalExpr(precedence);
+
+        while (_current.Kind != TokenKind.EndOfFile
+               && IsLogical()
+               && (int)precedence <= (int)_current.Kind.ToPrecedence())
+        {
+            var logical = _current;
+            Next();
+            expr = new InfixExpr(expr, logical.Kind.ToOp(), ParseRelationalExpr(precedence));
+        }
+
+        return expr;
+    }
+    
+    private Expr ParseRelationalExpr(Precedence precedence = Precedence.Lowest, Token? eaten = null)
+    {
+        var expr = ParseExpr(precedence);
+
+        while (_current.Kind != TokenKind.EndOfFile
+               && IsRelational()
+               && (int)precedence <= (int)_current.Kind.ToPrecedence())
+        {
+            var logical = _current;
+            Next();
+            expr = new InfixExpr(expr, logical.Kind.ToOp(), ParseExpr(precedence));
+        }
+
+        return expr;
+    }
+
     private Expr ParseExpr(Precedence precedence = Precedence.Lowest, Token? eaten = null)
     {
         Expr left = ParseSimpleExpr()
-            ?? ParseClosureExpr()
-            ?? ParsePrefixExpr()
-            ?? ParseListExpr()
-            ?? throw new Exception($"Unknown token: {_current}");
+                    ?? ParseClosureExpr()
+                    ?? ParsePrefixExpr()
+                    ?? ParseListExpr()
+                    ?? throw new Exception($"Unknown token: {_current}");
 
         while (_current.Kind != TokenKind.EndOfFile
                && _current.Kind != TokenKind.Semicolon
-               && (int)precedence <= (int)_current.Kind.ToPrecedence())
+               && (int)precedence <= (int)_current.Kind.ToPrecedence()
+               && !IsLogical())
         {
             var postfix = ParsePostfixExpr(left);
             var infix = ParseInfixExpr(postfix ?? left);
@@ -383,19 +416,6 @@ public class Parser
                 Next();
                 return new InfixExpr(left, token.Kind.ToOp(), ParseExpr(token.Kind.ToPrecedence()));
             
-            case TokenKind.EqualTo:
-            case TokenKind.NotEqualTo:
-            case TokenKind.LessThanOrEqualTo:
-            case TokenKind.LessThan:
-            case TokenKind.GreaterThan:
-            case TokenKind.GreaterThanOrEqualTo:
-            case TokenKind.And:
-            case TokenKind.Or:
-                // TODO :: Fix These Token Kind Operations.
-                var token2 = _current;
-                Next();
-                return new InfixExpr(left, token2.Kind.ToOp(), ParseExpr(token2.Kind.ToPrecedence()));
-            
             case TokenKind.Assign:
                 Next();
                 return new AssignmentExpr(left, ParseExpr());
@@ -403,5 +423,30 @@ public class Parser
             default:
                 return null;
         }
+    }
+
+    private bool IsRelational()
+    {
+        return _current.Kind switch
+        {
+            TokenKind.EqualTo 
+                or TokenKind.NotEqualTo 
+                or TokenKind.LessThanOrEqualTo 
+                or TokenKind.LessThan 
+                or TokenKind.GreaterThan 
+                or TokenKind.GreaterThanOrEqualTo 
+                => true,
+            _ => false
+        };
+    }
+
+    private bool IsLogical()
+    {
+        return _current.Kind switch
+        {
+            TokenKind.And => true,
+            TokenKind.Or => true,
+            _ => false
+        };
     }
 }
