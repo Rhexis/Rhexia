@@ -6,7 +6,7 @@ namespace Rhexia;
 
 internal static class Program
 {
-    private static void Main(string[] args)
+    private static int Main(string[] args)
     {
         // var sample = "Code/order_of_ops.ria";
         var sample = "Code/sample.ria";
@@ -18,6 +18,6 @@ internal static class Program
         var ast = parser.Parse();
         var interpreter = new Interpreter(ast);
 
-        interpreter.Execute();
+        return interpreter.Execute();
     }
 }

@@ -9,24 +9,26 @@ namespace Rhexia.Runtime;
 
 public class Interpreter(AbstractSyntaxTree ast)
 {
-    public Environment Env { get; set; } = new();
-    public Dictionary<string, ObjectValue> Objects { get; } = [];
+    private const int Success = 0;
+    private const int Failure = 1;
+    private Environment Env { get; set; } = new();
+    private Dictionary<string, ObjectValue> Objects { get; } = [];
 
-    public bool Execute()
+    public int Execute()
     {
-        // try
-        // {
-        foreach (var statement in ast.Statements)
+        try
         {
-            Interpret(statement);
+            foreach (var statement in ast.Statements)
+            {
+                Interpret(statement);
+            }
+            return Success;
         }
-        return true;
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine(e);
-        //     return false;
-        // }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Failure;
+        }
     }
 
     private Value? Interpret(Statement statement)
@@ -164,8 +166,8 @@ public class Interpreter(AbstractSyntaxTree ast)
             NumericExpr numericExpr => new NumericValue(numericExpr.Literal),
             StringExpr stringExpr => new StringValue(stringExpr.Literal),
             BoolExpr boolExpr => new BoolValue(boolExpr.Literal),
-            IdentifierExpr identifierExpr => Env.Get(identifierExpr.Identifier) ??
-                                             throw new Exception($"Undefined variable: {identifierExpr.Identifier}"),
+            IdentifierExpr identifierExpr => Env.Get(identifierExpr.Identifier)
+                ?? throw new Exception($"Undefined variable: {identifierExpr.Identifier}"),
             _ => null
         };
     }
