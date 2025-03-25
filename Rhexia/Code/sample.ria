@@ -48,7 +48,7 @@ while (idx < arr.Length)
 {
     if (arr[idx] == 100)
     {
-        print("idx is " + 1 + " and arr[idx] is " + arr[idx]);
+        print("idx is " + idx + " and arr[idx] is " + arr[idx]);
     }
     else
     {
