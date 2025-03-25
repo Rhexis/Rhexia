@@ -2,18 +2,18 @@ for (var i = 1; i <= 100; i++)
 {
     if (i % 3 != 0 && i % 5 != 0)
     {
-        write(i);
+        write(i)
     }
 
     if (i % 3 == 0)
     {
-        write("Fizz");
+        write("Fizz")
     }
     
     if (i % 5 == 0)
     {
-        write("Buzz");
+        write("Buzz")
     }
     
-    print("");
+    print("")
 }
