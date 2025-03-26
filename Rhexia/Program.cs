@@ -1,6 +1,6 @@
-﻿using Rhexia.Ast;
-using Rhexia.Lex;
-using Rhexia.Runtime;
+﻿using Rhexia.Frontend.Lex;
+using Rhexia.Frontend.Semantic;
+using Rhexia.Frontend.Syntax;
 
 namespace Rhexia;
 
