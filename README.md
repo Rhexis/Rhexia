@@ -1,88 +1,14 @@
 # Rhexia (Rhex-I-A)
 
-Rhexis is the interpreter for the language RIA, pronounced like aria.
+**Rhexia** is the interpreter for the **RIA** language, which is pronounced like *aria*.
 
-RIA stands for Rhexis Intelligence Artificielle, it is an interpreted language written in C#.
+## About RIA
 
-Code Sample:
-```
-var name = "Rhexis"
-var age = 30
-var daysOld = 10_950
+**RIA** stands for **Rhexis Intelligence Artificielle**. 
+It is an interpreted programming language developed using **C#** by me, **Rhexis**.
 
-function greet(name)
-{
-    print("Hello, " + name)
-}
+## Current Status
 
-greet(name)
+This project is still in development and is primarily for personal use and experimentation. It is not yet complete, but contributions and feedback are welcome as the project evolves.
 
-print("Age is: " + age)
-print("Last year your age was: " + age - 1)
-print("Name is: " + name)
-
-if (age == 30)
-{
-    print("You are 30 years old!")
-}
-else
-{
-    var ageInDays = age * 365
-    print(age + " is " + ageInDays + " days old")
-}
-
-if (!false) { print("true") }
-
-function addOne(num)
-{
-    return num + 1
-}
-
-print(addOne(5))
-
-var func = function()
-{
-    print("I am a closure");
-}
-
-func()
-
-var arr = [1, 2, 3]
-arr[0] = 100
-print(arr[0])
-
-var idx = 0
-while (idx < arr.Length)
-{
-    if (arr[idx] == 100)
-    {
-        print("idx is " + idx + " and arr[idx] is " + arr[idx])
-    }
-    else
-    {
-        print(arr[idx])
-    }
-    idx++
-}
-print(idx)
-
-for (var i = 0; i < 10; i++)
-{
-    print("For:[" + i + "]")
-}
-
-object person {
-    var name = "Rhexis"
-    var age = 30
-    
-    function toString()
-    {
-        print(name + ":" + age)
-    }
-    
-    function test()
-    {
-        print(name + ":" + age)
-    }
-}
-```
+> *Note: As of now, this is mainly a fun project for me to explore lexing, parsing & interpreting.*
