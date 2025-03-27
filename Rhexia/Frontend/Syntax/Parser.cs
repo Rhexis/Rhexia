@@ -14,7 +14,8 @@ public class Parser
     public Parser(Lexer lexer)
     {
         Lexer = lexer;
-        Next();
+        Eat(TokenKind.EndOfFile);
+        Eat(TokenKind.EndOfFile);
     }
 
     /// <summary>
@@ -45,26 +46,19 @@ public class Parser
     public AbstractSyntaxTree Parse()
     {
         var tree = new AbstractSyntaxTree();
-        Next();
+        
         while (true)
         {
             if (_current.Kind == TokenKind.Semicolon) Next();
             if (_current.Kind == TokenKind.EndOfFile) break;
-            var statement = ParseStatement();
-            if (statement == null) break;
-            tree.Statements.Add(statement);
+            tree.Statements.Add(ParseStatement());
         }
         
         return tree;
     }
 
-    private Statement? ParseStatement()
+    private Statement ParseStatement()
     {
-        if (_current.Kind is TokenKind.EndOfFile or TokenKind.Semicolon)
-        {
-            return null;
-        }
-        
         return _current.Kind switch
         {
             TokenKind.For => ParseFor(),
@@ -137,7 +131,7 @@ public class Parser
         
         Eat(TokenKind.LeftRoundBracket);
         var parameters = new List<Parameter>();
-        while (_current.Kind is not TokenKind.EndOfFile and not TokenKind.RightRoundBracket)
+        while (_current.Kind is not TokenKind.RightRoundBracket)
         {
             // Shouldn't enter here for functions with no parameters
             parameters.Add(new Parameter(Eat(TokenKind.Identifier).Literal.ToString()!));
@@ -203,10 +197,7 @@ public class Parser
         while (_current.Kind != TokenKind.RightCurlyBracket)
         {
             var statement = ParseStatement();
-            if (statement != null)
-            {
-                block.Add(statement);
-            }
+            block.Add(statement);
 
             if (_current.Kind == TokenKind.Semicolon)
             {
@@ -417,8 +408,9 @@ public class Parser
     {
         return _current.Kind switch
         {
-            TokenKind.And => true,
-            TokenKind.Or => true,
+            TokenKind.And 
+                or TokenKind.Or
+                => true,
             _ => false
         };
     }
